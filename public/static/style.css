@@ -1,1 +1,136 @@
 h1 { font-family: Arial, Helvetica, sans-serif; }
+
+/* ===== NWARE FIT custom styles ===== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
+.font-display {
+  letter-spacing: 0.03em;
+}
+
+/* Hero background with logo image + dark gradient overlay */
+.hero-bg {
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.97) 100%),
+    url('/static/brand/nware-fit-logo.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+}
+
+/* Repeating subtle logo pattern used as section texture */
+.pattern-bg {
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.93), rgba(0,0,0,0.96)),
+    url('/static/brand/nware-fit-logo.jpg');
+  background-size: 260px;
+  background-position: center;
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #F5DA81 0%, #D4AF37 45%, #9C7A22 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gold-border {
+  border-color: #D4AF37;
+}
+
+.card-hover {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px -5px rgba(212, 175, 55, 0.25);
+}
+
+.product-img-wrap {
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: #111;
+}
+.product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.product-img-wrap:hover img {
+  transform: scale(1.08);
+}
+
+/* Floating WhatsApp button pulse */
+@keyframes wa-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+.wa-float {
+  animation: wa-pulse 2.2s infinite;
+}
+
+.filter-btn.active {
+  background-color: #D4AF37;
+  color: #000;
+  border-color: #D4AF37;
+}
+
+.tab-btn.active {
+  background-color: #D4AF37;
+  color: #000;
+}
+
+/* Lightbox */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+#lightbox.open {
+  display: flex;
+}
+#lightbox img {
+  max-height: 88vh;
+  max-width: 92vw;
+  border-radius: 0.5rem;
+  border: 2px solid #D4AF37;
+}
+
+.marquee-track {
+  display: inline-flex;
+  animation: marquee 22s linear infinite;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.star-gold {
+  color: #D4AF37;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
