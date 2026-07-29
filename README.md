@@ -19,7 +19,7 @@
   - T-shirt Oversize (Nike/Adidas/Jordan/Lacoste) : 60 DH
   - Short Oversize : 70 DH
   - Ensemble (t-shirt + short assorti) : 130 DH
-- ✅ Section **Catalogue** avec les **71 images produits** fournies par le client, chacune avec :
+- ✅ Section **Catalogue** avec les **55 images produits** fournies par le client, chacune avec :
   - Filtre par marque (Nike, Adidas, Jordan, Lacoste, STWTZ, Tous)
   - Filtre par catégorie (T-shirt Oversize, T-shirt Simple, Short, Ensemble, Tout)
   - Zoom (lightbox) au clic sur l'image
@@ -37,11 +37,11 @@
 - **GitHub** : non connecté encore
 
 ## Structure de données
-- `src/data/products.ts` : catalogue de 71 produits générés automatiquement à partir des noms de fichiers d'image (`/public/static/products/`). Chaque produit contient : `id`, `file`, `name`, `brand` (Nike/Adidas/Jordan/Lacoste/STWTZ/Nike & Adidas), `category` (tshirt-oversize / tshirt-simple / short / ensemble), `price`, `color`.
+- `src/data/products.ts` : catalogue de 55 produits générés automatiquement à partir des noms de fichiers d'image (`/public/static/products/`). Chaque produit contient : `id`, `file`, `name`, `brand` (Nike/Adidas/Jordan/Lacoste/STWTZ/Nike & Adidas), `category` (tshirt-oversize / tshirt-simple / short / ensemble), `price`, `color`.
 - Aucune base de données externe utilisée — le catalogue est statique (données en dur dans le code), adapté à un site vitrine sans besoin de CMS dynamique pour le moment.
 
 ## Stockage des assets
-- `public/static/products/` — 71 photos produits (t-shirts, shorts, ensembles)
+- `public/static/products/` — 55 photos produits (t-shirts, shorts) — catalogue mis à jour avec les nouvelles photos envoyées par le client
 - `public/static/brand/nware-fit-logo.jpg` — logo NWARE FIT (utilisé en favicon + fond hero + header + footer)
 - `public/static/style.css` — styles personnalisés (fond logo, animations, lightbox, marquee...)
 - `public/static/app.js` — interactions front (filtres, menu mobile, lightbox, scroll header)
@@ -71,4 +71,4 @@
 - **Plateforme** : Cloudflare Pages (Hono + Vite)
 - **Statut** : ✅ Fonctionnel en local (sandbox) — ❌ Pas encore déployé en production
 - **Stack technique** : Hono + TypeScript (JSX) + TailwindCSS (CDN) + Font Awesome + Google Fonts
-- **Dernière mise à jour** : 26 juillet 2026
+- **Dernière mise à jour** : 29 juillet 2026 — remplacement complet des photos produits (71 → 55 nouvelles photos client)

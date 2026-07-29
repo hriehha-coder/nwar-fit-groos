@@ -23,69 +23,112 @@ const colorLabels: Record<string, string> = {
   green: 'Vert', maroon: 'Bordeaux', brown: 'Marron', cream: 'Crème',
   olive: 'Olive', grey: 'Gris', teal: 'Vert canard', red: 'Rouge',
   purple: 'Violet', navyblue: 'Bleu marine', yellow: 'Jaune',
-  lightyellow: 'Jaune clair', mauve: 'Mauve', pink: 'Rose',
-  mint: 'Menthe', lightmint: 'Menthe clair', bright: 'Coloré',
-  pastel1: 'Pastel', pastel2: 'Pastel', 'black-black': 'Noir/Noir',
-  'black-grey': 'Noir/Gris', 'white-black': 'Blanc/Noir',
-}
-
-const brandLabels: Record<string, ProductBrand> = {
-  adidas: 'Adidas',
-  jordanair: 'Jordan', jordanbulls: 'Jordan', jordanlogoback: 'Jordan',
-  jordanlogobox: 'Jordan', jordantext: 'Jordan', jordan: 'Jordan',
-  lacoste: 'Lacoste',
-  nikeswoosh: 'Nike', nike: 'Nike',
-  stwtz: 'STWTZ',
-  mix: 'Nike & Adidas',
-}
-
-const styleLabels: Record<string, string> = {
-  jordanair: 'Air', jordanbulls: 'Bulls', jordanlogoback: 'Logo Dos',
-  jordanlogobox: 'Logo Box', jordantext: 'Text', nikeswoosh: 'Swoosh',
-  'nike-trio': 'Trio', mix: 'Mix',
+  lilac: 'Lilas', pink: 'Rose', mint: 'Menthe', peach: 'Pêche',
+  mauve: 'Mauve', 'grey-black': 'Gris/Noir', 'red-cream': 'Rouge/Crème',
+  'white-maroon': 'Blanc/Bordeaux', 'lilac-mint': 'Lilas/Menthe',
+  'red-mint': 'Rouge/Menthe', 'pink-maroon': 'Rose/Bordeaux',
+  'white-lilac': 'Blanc/Lilas', yellow2: 'Jaune',
+  'trio-mauve': 'Trio Mauve', 'trio-yellow': 'Trio Jaune',
+  'trio-pink-navy-lilac': 'Trio Rose/Marine/Lilas',
 }
 
 function humanizeColor(raw: string): string {
   return colorLabels[raw] || raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
-// Parses filenames like:
-//  tshirt-adidas-black.jpg          -> tshirt, adidas, black
-//  tshirt-jordanlogobox-cream.jpg   -> tshirt, jordanlogobox, cream
-//  short-mix-maroon-nike-adidas.jpg -> short, mix, maroon-nike-adidas
-//  short-nike-trio-bright.jpg       -> short, nike-trio, bright
-//  ensemble-stwtz-black-black.jpg   -> ensemble, stwtz, black-black
+interface ParsedInfo {
+  brand: ProductBrand
+  style?: string
+  colorKey: string
+}
+
+// Parses filenames such as:
+//  tshirt-nike-cream.jpg              -> Nike, cream
+//  tshirt-jordan-logobox-cream.jpg    -> Jordan (Logo Box), cream
+//  tshirt-jordan-text-green.jpg       -> Jordan (Text), green
+//  tshirt-jordan-bulls-cream.jpg      -> Jordan (Bulls), cream
+//  tshirt-jordanair-white.jpg         -> Jordan (Air), white
+//  tshirt-jordanairback-brown.jpg     -> Jordan (Air Dos), brown
+//  tshirt-jordanlogoback-brown.jpg    -> Jordan (Logo Dos), brown
+//  tshirt-lacoste-green.jpg           -> Lacoste, green
+//  tshirt-adidas-black.jpg            -> Adidas, black
+//  tshirt-stwtz-white.jpg             -> STWTZ, white
+//  short-mix-trio-yellow.jpg          -> Nike & Adidas (Trio), yellow
+//  short-mix-white.jpg                -> Nike & Adidas, white
+//  short-jordan-yellow.jpg            -> Jordan, yellow
+//  short-stwtz-grey-black.jpg         -> STWTZ, grey-black
 function parseFile(file: string): Product {
   const base = file.replace('.jpg', '')
   const parts = base.split('-')
-  const typeTag = parts[0] // tshirt | short | ensemble
+  const typeTag = parts[0] // tshirt | short
+  const rest = parts.slice(1) // everything after tshirt/short-
 
-  let styleKey = parts[1]
+  let brand: ProductBrand
+  let style: string | undefined
   let colorKey: string
 
-  if (base.startsWith('short-nike-trio-')) {
-    styleKey = 'nike-trio'
-    colorKey = parts.slice(3).join('-')
-  } else if (base.startsWith('short-mix-')) {
-    styleKey = 'mix'
-    colorKey = parts[2] // color word only (nike-adidas suffix dropped for label)
+  const key = rest[0]
+
+  if (key === 'nike') {
+    brand = 'Nike'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'jordan') {
+    brand = 'Jordan'
+    if (rest[1] === 'logobox' || rest[1] === 'text' || rest[1] === 'bulls') {
+      style = rest[1]
+      colorKey = rest.slice(2).join('-')
+    } else {
+      colorKey = rest.slice(1).join('-')
+    }
+  } else if (key === 'jordanair') {
+    brand = 'Jordan'
+    style = 'air'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'jordanairback') {
+    brand = 'Jordan'
+    style = 'air-dos'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'jordanlogoback') {
+    brand = 'Jordan'
+    style = 'logo-dos'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'lacoste') {
+    brand = 'Lacoste'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'adidas') {
+    brand = 'Adidas'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'stwtz') {
+    brand = 'STWTZ'
+    colorKey = rest.slice(1).join('-')
+  } else if (key === 'mix') {
+    brand = 'Nike & Adidas'
+    if (rest[1] === 'trio') {
+      style = 'trio'
+      colorKey = rest.slice(2).join('-')
+    } else {
+      colorKey = rest.slice(1).join('-')
+    }
   } else {
-    colorKey = parts.slice(2).join('-')
+    brand = 'Nike'
+    colorKey = rest.join('-')
   }
 
-  const brand = brandLabels[styleKey] || 'Nike'
-  const styleLabel = styleLabels[styleKey]
-  const colorLabel = humanizeColor(colorKey)
+  const styleLabels: Record<string, string> = {
+    logobox: 'Logo Box',
+    text: 'Text',
+    bulls: 'Bulls',
+    air: 'Air',
+    'air-dos': 'Air Dos',
+    'logo-dos': 'Logo Dos',
+    trio: 'Trio',
+  }
 
   let category: ProductCategory
   let price: number
   let namePrefix: string
 
-  if (typeTag === 'ensemble') {
-    category = 'ensemble'
-    price = 130
-    namePrefix = 'Ensemble'
-  } else if (typeTag === 'short') {
+  if (typeTag === 'short') {
     category = 'short'
     price = 70
     namePrefix = 'Short Oversize'
@@ -102,8 +145,9 @@ function parseFile(file: string): Product {
     }
   }
 
+  const colorLabel = humanizeColor(colorKey)
   const nameParts = [namePrefix, brand]
-  if (styleLabel) nameParts.push(styleLabel)
+  if (style && styleLabels[style]) nameParts.push(styleLabels[style])
   nameParts.push(colorLabel)
 
   return {
@@ -118,75 +162,59 @@ function parseFile(file: string): Product {
 }
 
 export const PRODUCT_FILES: string[] = [
-  'ensemble-jordanair-black.jpg',
-  'ensemble-jordanair-white.jpg',
-  'ensemble-stwtz-black-black.jpg',
-  'ensemble-stwtz-black-grey.jpg',
-  'ensemble-stwtz-white-black.jpg',
-  'short-jordan-cream.jpg',
-  'short-jordan-lightyellow.jpg',
-  'short-jordan-maroon.jpg',
-  'short-jordan-navyblue.jpg',
-  'short-jordan-purple.jpg',
-  'short-jordan-red.jpg',
-  'short-jordan-white.jpg',
+  'short-jordan-grey-black.jpg',
+  'short-jordan-lilac.jpg',
+  'short-jordan-pink-maroon.jpg',
+  'short-jordan-red-mint.jpg',
+  'short-jordan-white-lilac.jpg',
   'short-jordan-yellow.jpg',
-  'short-mix-maroon-nike-adidas.jpg',
-  'short-mix-mauve-nike-adidas.jpg',
-  'short-mix-mint-nike-adidas.jpg',
-  'short-mix-pink-nike-adidas.jpg',
-  'short-mix-red-nike-adidas.jpg',
-  'short-mix-white-nike-adidas.jpg',
-  'short-mix-yellow-nike-adidas.jpg',
-  'short-nike-trio-bright.jpg',
-  'short-nike-trio-pastel1.jpg',
-  'short-nike-trio-pastel2.jpg',
-  'short-stwtz-lightmint.jpg',
-  'short-stwtz-lightyellow.jpg',
-  'short-stwtz-maroon.jpg',
-  'short-stwtz-mauve.jpg',
-  'short-stwtz-olive.jpg',
-  'short-stwtz-pink.jpg',
-  'short-stwtz-purple.jpg',
-  'short-stwtz-red.jpg',
-  'short-stwtz-yellow.jpg',
+  'short-jordan-yellow2.jpg',
+  'short-mix-lilac.jpg',
+  'short-mix-maroon.jpg',
+  'short-mix-navyblue.jpg',
+  'short-mix-peach.jpg',
+  'short-mix-pink.jpg',
+  'short-mix-purple.jpg',
+  'short-mix-red.jpg',
+  'short-mix-trio-mauve.jpg',
+  'short-mix-trio-yellow.jpg',
+  'short-mix-white.jpg',
+  'short-stwtz-grey-black.jpg',
+  'short-stwtz-lilac-mint.jpg',
+  'short-stwtz-red-cream.jpg',
+  'short-stwtz-trio-pink-navy-lilac.jpg',
+  'short-stwtz-white-maroon.jpg',
   'tshirt-adidas-black.jpg',
   'tshirt-adidas-blue.jpg',
   'tshirt-adidas-green.jpg',
   'tshirt-adidas-lightblue.jpg',
   'tshirt-adidas-maroon.jpg',
   'tshirt-adidas-white.jpg',
+  'tshirt-jordan-bulls-cream.jpg',
+  'tshirt-jordan-bulls-green.jpg',
+  'tshirt-jordan-logobox-cream.jpg',
+  'tshirt-jordan-logobox-green.jpg',
+  'tshirt-jordan-logobox-grey.jpg',
+  'tshirt-jordan-logobox-olive.jpg',
+  'tshirt-jordan-logobox-teal.jpg',
+  'tshirt-jordan-text-brown.jpg',
+  'tshirt-jordan-text-cream.jpg',
+  'tshirt-jordan-text-green.jpg',
+  'tshirt-jordan-text-olive.jpg',
   'tshirt-jordanair-black.jpg',
   'tshirt-jordanair-brown.jpg',
   'tshirt-jordanair-white.jpg',
-  'tshirt-jordanbulls-brown.jpg',
-  'tshirt-jordanbulls-cream.jpg',
-  'tshirt-jordanbulls-green.jpg',
-  'tshirt-jordanbulls-olive.jpg',
+  'tshirt-jordanairback-brown.jpg',
   'tshirt-jordanlogoback-brown.jpg',
-  'tshirt-jordanlogobox-cream.jpg',
-  'tshirt-jordanlogobox-green.jpg',
-  'tshirt-jordanlogobox-grey.jpg',
-  'tshirt-jordanlogobox-olive.jpg',
-  'tshirt-jordanlogobox-teal.jpg',
-  'tshirt-jordantext-brown.jpg',
-  'tshirt-jordantext-cream.jpg',
-  'tshirt-jordantext-green.jpg',
-  'tshirt-jordantext-olive.jpg',
-  'tshirt-jordantext-teal.jpg',
   'tshirt-lacoste-black.jpg',
   'tshirt-lacoste-blue.jpg',
   'tshirt-lacoste-green.jpg',
   'tshirt-lacoste-lightblue.jpg',
   'tshirt-lacoste-white.jpg',
-  'tshirt-nikeswoosh-brown.jpg',
-  'tshirt-nikeswoosh-cream.jpg',
-  'tshirt-nikeswoosh-green.jpg',
-  'tshirt-nikeswoosh-grey.jpg',
-  'tshirt-nikeswoosh-olive.jpg',
-  'tshirt-nikeswoosh-red.jpg',
-  'tshirt-nikeswoosh-teal.jpg',
-  'tshirt-stwtz-black.jpg',
+  'tshirt-nike-brown.jpg',
+  'tshirt-nike-cream.jpg',
+  'tshirt-nike-green.jpg',
+  'tshirt-nike-olive.jpg',
   'tshirt-stwtz-brown.jpg',
   'tshirt-stwtz-white.jpg',
 ]
