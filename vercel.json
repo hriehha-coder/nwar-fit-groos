@@ -1,10 +1,11 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "public",
   "framework": null,
-  "functions": {
-    "src/index.tsx": {
-      "runtime": "nodejs20.x"
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
     }
-  }
+  ]
 }
